@@ -1,0 +1,50 @@
+name: Pipeline com dados reais
+# Baixa as fontes públicas, treina e publica os resultados como artefato.
+# Rodar em: Actions > "Pipeline com dados reais" > Run workflow
+on:
+  workflow_dispatch:
+    inputs:
+      retrain:
+        description: "Ignorar o cache de dados brutos"
+        type: boolean
+        default: false
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt
+
+      - name: Cache dos dados brutos
+        if: ${{ !inputs.retrain }}
+        uses: actions/cache@v4
+        with:
+          path: data/raw
+          key: raw-${{ github.run_id }}
+          restore-keys: raw-
+
+      - name: Baixar dados e treinar
+        run: python -m src.pipeline --download
+        env:
+          PROEX_SYNTHETIC: "0"
+
+      - name: Resumo
+        if: always()
+        run: |
+          ls -la data/raw/garantia_safra | head -20 || true
+          ls data/raw/chuva | wc -l || true
+          cat reports/respostas.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: resultados
+          path: |
+            data/processed/
+            models/
+            reports/
+          retention-days: 30
