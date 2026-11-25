@@ -64,8 +64,10 @@ def _baixar_mes(yyyymm: str, mes_atual: str) -> tuple[str, str]:
     marcador = config.GS_RAW_DIR / f"{yyyymm}.vazio"
     if marcador.exists():
         return yyyymm, "sem_dados"
-    url = config.PORTAL_GS_URL.format(yyyymm=yyyymm)
-    for tentativa in range(3):
+    urls = [config.PORTAL_GS_URL.format(yyyymm=yyyymm), config.PORTAL_GS_CDN_URL.format(yyyymm=yyyymm)]
+    erro = ""
+    for tentativa in range(4):
+        url = urls[tentativa % 2]
         try:
             r = requests.get(url, headers=HEADERS, timeout=300, allow_redirects=True)
         except requests.RequestException as exc:
@@ -77,17 +79,17 @@ def _baixar_mes(yyyymm: str, mes_atual: str) -> tuple[str, str]:
             (config.GS_RAW_DIR / f"{yyyymm}_GarantiaSafra.zip").write_bytes(r.content)
             log.info("Garantia-Safra %s: %.1f MB", yyyymm, len(r.content) / 1e6)
             return yyyymm, "baixados"
-        if r.status_code in (200, 404) and not eh_zip:
+        if r.status_code in (200, 404) and not eh_zip and url == urls[0]:
             # o Portal responde sem arquivo quando não houve folha naquele mês
             if yyyymm != mes_atual:
                 marcador.touch()
             return yyyymm, "sem_dados"
         erro = f"HTTP {r.status_code}"
-        time.sleep(3 * (tentativa + 1))
+        time.sleep(2 * (tentativa + 1))
     return yyyymm, f"erro: {erro}"
 
 
-def baixar_garantia_safra(workers: int = 6) -> dict:
+def baixar_garantia_safra(workers: int = 3) -> dict:
     """Baixa as folhas mensais em paralelo. Meses sem pagamento ganham um marcador .vazio."""
     status = {"baixados": 0, "em_cache": 0, "sem_dados": 0, "erros": []}
     mes_atual = date.today().strftime("%Y%m")

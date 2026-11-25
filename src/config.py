@@ -17,6 +17,8 @@ MUNICIPIOS_CSV = RAW_DIR / "municipios.csv"
 
 # Fontes
 PORTAL_GS_URL = "https://portaldatransparencia.gov.br/download-de-dados/garantia-safra/{yyyymm}"
+# servidor de arquivos para onde o Portal redireciona (usado quando o Portal recusa a requisição)
+PORTAL_GS_CDN_URL = "https://dadosabertos-download.cgu.gov.br/PortalDaTransparencia/saida/garantia-safra/{yyyymm}_GarantiaSafra.zip"
 NASA_POWER_URL = (
     "https://power.larc.nasa.gov/api/temporal/daily/point"
     "?parameters=PRECTOTCORR&community=AG&longitude={lon}&latitude={lat}"
