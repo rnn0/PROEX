@@ -33,6 +33,13 @@ jobs:
           key: raw-${{ github.run_id }}
           restore-keys: raw-
 
+      - name: Folhas baixadas manualmente (branch dados-brutos)
+        uses: actions/checkout@v4
+        with:
+          ref: dados-brutos
+          path: manuais
+      - run: mkdir -p data/raw/garantia_safra && cp -n manuais/*.zip data/raw/garantia_safra/ && rm -f data/raw/garantia_safra/*.vazio && ls data/raw/garantia_safra | wc -l
+
       - name: Baixar dados e treinar
         run: python -m src.pipeline --download 2>&1 | tee pipeline.log
         env:
