@@ -8,6 +8,9 @@ on:
         description: "Ignorar o cache de dados brutos"
         type: boolean
         default: false
+      safra_inicial:
+        description: "Primeira safra analisada"
+        default: "2014"
 
 jobs:
   pipeline:
@@ -28,9 +31,10 @@ jobs:
           restore-keys: raw-
 
       - name: Baixar dados e treinar
-        run: python -m src.pipeline --download
+        run: python -m src.pipeline --download 2>&1 | tee pipeline.log
         env:
           PROEX_SYNTHETIC: "0"
+          PROEX_SAFRA_INICIAL: ${{ inputs.safra_inicial }}
 
       - name: Resumo
         if: always()
@@ -47,4 +51,5 @@ jobs:
             data/processed/
             models/
             reports/
+            pipeline.log
           retention-days: 30

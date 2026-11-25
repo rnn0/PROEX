@@ -58,38 +58,48 @@ def _arquivo_local(yyyymm: str):
     return None
 
 
-def baixar_garantia_safra(sleep: float = 0.5) -> dict:
-    """Baixa as folhas mensais. Meses sem pagamento recebem um marcador .vazio para não repetir."""
-    status = {"baixados": 0, "em_cache": 0, "sem_dados": 0, "erros": []}
-    mes_atual = date.today().strftime("%Y%m")
-    for yyyymm in meses_garantia_safra():
-        if _arquivo_local(yyyymm):
-            status["em_cache"] += 1
-            continue
-        marcador = config.GS_RAW_DIR / f"{yyyymm}.vazio"
-        if marcador.exists():
-            status["sem_dados"] += 1
-            continue
-        url = config.PORTAL_GS_URL.format(yyyymm=yyyymm)
+def _baixar_mes(yyyymm: str, mes_atual: str) -> tuple[str, str]:
+    if _arquivo_local(yyyymm):
+        return yyyymm, "em_cache"
+    marcador = config.GS_RAW_DIR / f"{yyyymm}.vazio"
+    if marcador.exists():
+        return yyyymm, "sem_dados"
+    url = config.PORTAL_GS_URL.format(yyyymm=yyyymm)
+    for tentativa in range(3):
         try:
-            r = requests.get(url, headers=HEADERS, timeout=180, allow_redirects=True)
+            r = requests.get(url, headers=HEADERS, timeout=300, allow_redirects=True)
         except requests.RequestException as exc:
-            status["erros"].append(f"{yyyymm}: {exc}")
+            erro = str(exc)
+            time.sleep(3 * (tentativa + 1))
             continue
         eh_zip = r.content[:2] == b"PK"
         if r.status_code == 200 and eh_zip:
             (config.GS_RAW_DIR / f"{yyyymm}_GarantiaSafra.zip").write_bytes(r.content)
-            status["baixados"] += 1
             log.info("Garantia-Safra %s: %.1f MB", yyyymm, len(r.content) / 1e6)
-        elif r.status_code in (200, 404) and not eh_zip:
+            return yyyymm, "baixados"
+        if r.status_code in (200, 404) and not eh_zip:
             # o Portal responde sem arquivo quando não houve folha naquele mês
             if yyyymm != mes_atual:
                 marcador.touch()
-            status["sem_dados"] += 1
-        else:
-            status["erros"].append(f"{yyyymm}: HTTP {r.status_code}")
-        time.sleep(sleep)
+            return yyyymm, "sem_dados"
+        erro = f"HTTP {r.status_code}"
+        time.sleep(3 * (tentativa + 1))
+    return yyyymm, f"erro: {erro}"
+
+
+def baixar_garantia_safra(workers: int = 6) -> dict:
+    """Baixa as folhas mensais em paralelo. Meses sem pagamento ganham um marcador .vazio."""
+    status = {"baixados": 0, "em_cache": 0, "sem_dados": 0, "erros": []}
+    mes_atual = date.today().strftime("%Y%m")
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        for yyyymm, res in ex.map(lambda m: _baixar_mes(m, mes_atual), meses_garantia_safra()):
+            if res.startswith("erro"):
+                status["erros"].append(f"{yyyymm}: {res}")
+            else:
+                status[res] += 1
     log.info("Garantia-Safra: %s", status)
+    if status["baixados"] + status["em_cache"] == 0:
+        raise RuntimeError(f"Nenhuma folha do Garantia-Safra foi baixada: {status['erros'][:5]}")
     return status
 
 
@@ -123,7 +133,7 @@ def _baixar_celula(lat: float, lon: float, inicio: str, fim: str, tentativas: in
     return "erro"
 
 
-def baixar_chuva(municipios: pd.DataFrame, workers: int = 4) -> dict:
+def baixar_chuva(municipios: pd.DataFrame, workers: int = 8) -> dict:
     """Uma série diária por célula da grade (vários municípios compartilham a mesma célula)."""
     inicio = f"{config.SAFRA_INICIAL - 1}{config.MES_INICIO_ESTACAO:02d}01"
     fim = (date.today() - timedelta(days=7)).strftime("%Y%m%d")
