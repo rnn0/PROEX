@@ -1,0 +1,40 @@
+# docker compose up --build
+#   1) "pipeline" baixa os dados públicos e treina (só na primeira vez; ~20-40 min com os dados reais)
+#   2) "api" (http://localhost:8000/docs) e "dashboard" (http://localhost:8501) sobem depois
+x-app: &app
+  build: .
+  image: proex-garantia-safra
+  volumes:
+    - ./data:/app/data
+    - ./models:/app/models
+    - ./reports:/app/reports
+
+services:
+  pipeline:
+    <<: *app
+    command: ["sh", "docker/train.sh"]
+    environment:
+      PROEX_RETRAIN: ${PROEX_RETRAIN:-0}
+      PROEX_SYNTHETIC: ${PROEX_SYNTHETIC:-0}
+
+  api:
+    <<: *app
+    command: ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports: ["8000:8000"]
+    depends_on:
+      pipeline:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      retries: 5
+
+  dashboard:
+    <<: *app
+    command: ["streamlit", "run", "dashboard/app.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+    ports: ["8501:8501"]
+    environment:
+      API_URL: http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
