@@ -40,10 +40,8 @@ function mapa(id, pontos, cor, opcoes) {
     marker: Object.assign({ size: 8 }, cor), text: pontos.map(opcoes.texto), hoverinfo: "text",
   }, opcoes.trace || {})].concat(opcoes.mais || []), {
     title: { text: opcoes.titulo, font: { size: 15 }, x: 0.02 }, margin: { l: 0, r: 0, t: 48, b: 0 },
-    // estilo local + camada raster: os pontos aparecem mesmo se o mapa de fundo não carregar
-    map: { style: "white-bg", center: { lat: -9, lon: -40 }, zoom: 4.2, layers: [{ sourcetype: "raster", below: "traces",
-      source: ["https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"],
-      sourceattribution: "© OpenStreetMap © CARTO" }] }, paper_bgcolor: "#fff",
+    // OpenStreetMap: fundo aberto, sem chave de API (o raster da CARTO passou a exigir chave)
+    map: { style: "open-street-map", center: { lat: -9, lon: -40 }, zoom: 4.2 }, paper_bgcolor: "#fff",
     legend: { orientation: "h", y: 0, x: 0, bgcolor: "rgba(255,255,255,.85)" }, showlegend: !!opcoes.legenda,
   }, CFG);
 }
