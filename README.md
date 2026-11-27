@@ -63,6 +63,13 @@ docker compose up --build
 Para treinar de novo (ex.: depois de novos meses de pagamento): `PROEX_RETRAIN=1 docker compose up pipeline`.
 Para testar rápido sem baixar nada: `PROEX_SYNTHETIC=1 PROEX_RETRAIN=1 docker compose up`.
 
+### Dashboard online (Vercel)
+
+A pasta `web/` é uma versão estática do dashboard (HTML + JavaScript, sem Python), com os resultados reais já
+exportados em `web/dados/`. Na Vercel: *Add New → Project*, importe este repositório e, em **Root Directory**,
+escolha `web` (Framework Preset: *Other*, sem comando de build). Para atualizar os dados depois de treinar de
+novo: `python scripts/exportar_web.py`.
+
 ### Dashboard online (Streamlit Community Cloud)
 
 O dashboard roda direto do repositório usando os resultados reais de `demo/`: em

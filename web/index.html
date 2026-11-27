@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Garantia-Safra: quem vai perder a safra no Semiárido?</title>
+<meta name="description" content="Dashboard do projeto PROEX: previsão de perda de safra no Semiárido com dados do Garantia-Safra e chuva da NASA POWER.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:,">
+<script src="plotly.min.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+<header>
+  <h1>Garantia-Safra: quem vai perder a safra no Semiárido?</h1>
+  <p class="sub">Mineração de dados com pagamentos do Garantia-Safra (Portal da Transparência) e chuva diária (NASA POWER) ·
+    ODS 2 (Fome Zero), ODS 13 (Ação Climática) e ODS 1 (Erradicação da Pobreza)</p>
+  <label class="filtro">Estado
+    <select id="uf"><option value="">Todos os estados</option></select>
+  </label>
+  <nav id="abas" role="tablist">
+    <button role="tab" data-aba="geral" aria-selected="true">Visão geral</button>
+    <button role="tab" data-aba="p1">Pergunta 1 · Previsão</button>
+    <button role="tab" data-aba="p2">Pergunta 2 · Recorrência</button>
+    <button role="tab" data-aba="atual" id="aba-atual">Risco da safra atual</button>
+    <button role="tab" data-aba="mun">Município</button>
+    <button role="tab" data-aba="sim">Simulador</button>
+  </nav>
+</header>
+
+<main>
+  <section id="geral" class="aba ativa">
+    <div class="kpis" id="kpis-geral"></div>
+    <div class="grade2">
+      <div class="graf" id="g-perda-ano"></div>
+      <div class="graf" id="g-chuva-ano"></div>
+    </div>
+    <p class="nota">Anos de seca (barras baixas à direita) tendem a coincidir com anos de muitos municípios com benefício
+      (barras altas à esquerda): é essa relação que o modelo explora.</p>
+    <details><summary>Qualidade e origem dos dados</summary><pre id="dados-qualidade"></pre></details>
+  </section>
+
+  <section id="p1" class="aba">
+    <h2 class="pergunta" id="titulo-p1"></h2>
+    <p class="nota">Escopo: Semiárido (área da Sudene), lavouras de sequeiro do programa (feijão, milho, arroz, mandioca e
+      algodão), uma safra por ano. A antecedência é contada até o início do pagamento, não até a perda.</p>
+    <div class="kpis" id="kpis-p1"></div>
+    <div class="grade2 larga">
+      <div class="graf" id="g-antecedencia"></div>
+      <div class="graf" id="g-importancia"></div>
+    </div>
+    <div class="graf" id="g-chuva-perda"></div>
+    <h3>Comparação de modelos (validação deixando uma safra inteira de fora)</h3>
+    <div class="tabela" id="t-comparacao"></div>
+    <h3>Desempenho em cada safra (modelo de produção)</h3>
+    <div class="tabela" id="t-por-safra"></div>
+  </section>
+
+  <section id="p2" class="aba">
+    <h2 class="pergunta" id="titulo-p2"></h2>
+    <div class="kpis" id="kpis-p2"></div>
+    <div class="grade2 larga">
+      <div class="graf mapa" id="m-segmentos"></div>
+      <div>
+        <div class="graf" id="g-segmentos"></div>
+        <div class="tabela" id="t-segmentos"></div>
+      </div>
+    </div>
+    <h3>Municípios onde a perda é a regra: candidatos a políticas permanentes de convivência com a seca</h3>
+    <div class="tabela rolagem" id="t-recorrentes"></div>
+  </section>
+
+  <section id="atual" class="aba">
+    <h2 id="titulo-atual"></h2>
+    <p class="nota">O resultado oficial (portaria de pagamento) ainda não saiu: este é o alerta antecipado do modelo.</p>
+    <div class="kpis" id="kpis-atual"></div>
+    <div class="grade2 larga">
+      <div class="graf mapa" id="m-atual"></div>
+      <div class="tabela rolagem alta" id="t-atual"></div>
+    </div>
+  </section>
+
+  <section id="mun" class="aba">
+    <label class="filtro">Município <input id="busca" list="lista-mun" placeholder="Digite o nome do município"></label>
+    <datalist id="lista-mun"></datalist>
+    <div class="kpis" id="kpis-mun"></div>
+    <div class="graf" id="g-mun"></div>
+  </section>
+
+  <section id="sim" class="aba">
+    <h2>E se chovesse assim? Simule o risco de um município</h2>
+    <p class="nota">Probabilidades calculadas pelo modelo de produção para uma grade de cenários (chuva até o fim de abril).</p>
+    <div class="sim">
+      <label><span>Chuva da estação: <b id="v-pct"></b> da média</span><input type="range" id="s-pct" min="20" max="180" step="10" value="70"></label>
+      <label><span>Maior veranico: <b id="v-ver"></b> dias secos seguidos</span><input type="range" id="s-ver" min="0" max="100" step="10" value="30"></label>
+      <label><span>Safras anteriores com benefício: <b id="v-hist"></b></span><input type="range" id="s-hist" min="0" max="8" step="1" value="4"></label>
+    </div>
+    <div class="resultado"><span id="r-prob"></span><span id="r-nivel"></span></div>
+    <div class="barra"><div id="r-barra"></div></div>
+  </section>
+</main>
+
+<footer>Projeto PROEX · Mineração de Dados · Fontes: Portal da Transparência (Garantia-Safra), NASA POWER (chuva),
+  IBGE/kelvins (municípios) · <a href="https://github.com/rnn0/PROEX">código no GitHub</a> · <span id="versao"></span></footer>
+</body>
+</html>
