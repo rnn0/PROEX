@@ -63,6 +63,11 @@ async function carregar() {
   el("titulo-p2").textContent = r.perguntas[1];
   if (r.safraAtual) el("aba-atual").textContent = `Risco da safra ${r.safraAtual}`;
   el("versao").textContent = `modelo ${r.modelo}, versão ${r.versao}`;
+  const porUf = {};
+  D.municipios.forEach(m => porUf[m.uf] = (porUf[m.uf] || 0) + 1);
+  el("estados").textContent = `Estados analisados (municípios): ` + Object.entries(porUf).sort((a, b) => b[1] - a[1])
+    .map(([u, n]) => `${u} ${n}`).join(" · ") + ". São os estados com pagamentos do Garantia-Safra no período: os 9 do " +
+    "Nordeste, o norte de Minas Gerais (área da Sudene) e 5 municípios do Amazonas. O Espírito Santo não teve pagamentos.";
   el("dados-qualidade").textContent = JSON.stringify(r.dados, null, 2);
   desenhar();
   simulador();

@@ -107,9 +107,12 @@ ocasional e baixo risco. Também usamos um critério direto: **recorrente = rece
 
 ## 5. Avaliação
 
-Dados reais: 1.317 municípios, safras 2018 a 2025 (10.536 linhas município × safra), 122 folhas mensais de
+Dados reais: 1.317 municípios de 11 estados, safras 2018 a 2025 (10.536 linhas município × safra), 122 folhas mensais de
 pagamento e chuva de 323 células da grade da NASA POWER. Em 65% das linhas o município recebeu o benefício.
-Faltaram 5 folhas que o Portal não entregou (2019-07, 2023-04, 2024-01, 2026-10 e 2026-11).
+Municípios por estado: BA 263, PI 199, PB 188, CE 181, RN 152, MG 122, PE 114, AL 37, MA 32, SE 24 e AM 5.
+São os estados com pagamentos no período: os 9 do Nordeste, o norte de Minas Gerais (área da Sudene) e 5 municípios
+do Amazonas, que a lei permite incluir por perda sistemática de safra. O Espírito Santo, também na área da Sudene,
+não teve pagamentos. Faltaram 5 folhas que o Portal não entregou (2019-07, 2023-04, 2024-01, 2026-10 e 2026-11).
 
 **Comparação de modelos** (chuva até o fim de abril, 2 meses antes do fim da colheita; validação deixando cada safra de fora):
 

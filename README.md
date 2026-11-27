@@ -1,5 +1,7 @@
 # Garantia-Safra: quem vai perder a safra no Semiárido?
 
+**Dashboard online:** https://proex-web.vercel.app
+
 [![CI](https://github.com/rnn0/PROEX/actions/workflows/ci.yml/badge.svg)](https://github.com/rnn0/PROEX/actions)
 
 Projeto da disciplina **PROEX: Projeto de Mineração de Dados** (metodologia CRISP-DM).
@@ -15,7 +17,8 @@ com a seca.
 1. **Dá para saber pela chuva, antes da colheita, quais municípios vão perder a safra?**
 2. **Em quais municípios a perda de safra se repete quase todo ano?**
 
-Escopo: Semiárido (área da Sudene) e as lavouras de sequeiro cobertas pelo programa (feijão, milho, arroz,
+Escopo: 1.317 municípios de 11 estados (BA, PI, PB, CE, RN, MG, PE, AL, MA, SE e AM), safras 2018 a 2025, no
+Semiárido (área da Sudene) e as lavouras de sequeiro cobertas pelo programa (feijão, milho, arroz,
 mandioca e algodão), com uma safra por ano.
 
 As respostas são calculadas pelo pipeline e ficam em `reports/respostas.md` e no dashboard. Os resultados com os
