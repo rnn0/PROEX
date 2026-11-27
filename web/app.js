@@ -15,7 +15,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;",
 
 function layout(titulo, extra = {}) {
   return Object.assign({
-    title: { text: titulo, font: { size: 15 }, x: 0.02 }, margin: { l: 56, r: 16, t: 56, b: 48 },
+    title: { text: titulo, font: { size: 15 }, x: 0.02 }, margin: { l: 56, r: 16, t: 56, b: 88 },
     paper_bgcolor: "#fff", plot_bgcolor: "#fff", font: { color: "#191919", size: 12 },
     legend: { orientation: "h", y: -0.15, yanchor: "top", x: 0 }, hoverlabel: { bgcolor: "#fff" },
     xaxis: { showgrid: false, linecolor: GRADE, tickfont: { color: CINZA } },
@@ -57,7 +57,6 @@ async function carregar() {
   const ufs = [...new Set(D.municipios.map(m => m.uf))].sort();
   el("uf").insertAdjacentHTML("beforeend", ufs.map(u => `<option>${u}</option>`).join(""));
   el("uf").addEventListener("change", e => { UF = e.target.value; desenhar(); });
-  el("lista-mun").innerHTML = D.municipios.map(m => `<option value="${esc(m.nome)} (${m.uf})">`).join("");
   el("busca").addEventListener("change", municipio);
   ["s-pct", "s-ver", "s-hist"].forEach(id => el(id).addEventListener("input", simulador));
   document.querySelectorAll("#abas button").forEach(b => b.addEventListener("click", () => abrir(b.dataset.aba)));
@@ -112,7 +111,7 @@ function desenhar() {
       customdata: a.map(x => x.meses_ate_pagamento),
       hovertemplate: "%{x}: ROC-AUC %{y:.2f}<br>~%{customdata:.0f} meses antes do pagamento<extra>" + s + "</extra>" };
   }), layout("Precisão conforme o mês em que a previsão é feita (ROC-AUC)", {
-    xaxis: { title: "Mês em que a previsão é feita", showgrid: false }, yaxis: { gridcolor: GRADE, title: "ROC-AUC" },
+    xaxis: { title: { text: "Mês em que a previsão é feita" }, showgrid: false }, yaxis: { gridcolor: GRADE, title: { text: "ROC-AUC" } },
     margin: { l: 56, r: 16, t: 56, b: 96 }, legend: { orientation: "h", y: -0.28, yanchor: "top", x: 0 } }), CFG);
   const imp = D.importancia.slice(0, 8).reverse();
   Plotly.react("g-importancia", [{ type: "bar", orientation: "h", x: imp.map(i => i.importancia), y: imp.map(i => i.descricao),
@@ -178,14 +177,15 @@ function desenhar() {
   tabela("t-atual", [{ t: "Município", k: "nome" }, { t: "UF", k: "uf" }, { t: "Probabilidade", f: l => pct(l.prob), n: 1 },
     { t: "Chuva (% da média)", f: l => num(l.chuvaAtual), n: 1 }, { t: "Maior veranico (dias)", k: "veranicoAtual", n: 1 }],
     at.slice().sort((a, b) => b.prob - a.prob));
+  const atual = el("busca").value;
+  el("busca").innerHTML = ms.map(m => `<option value="${m.id}">${esc(m.nome)} (${m.uf})</option>`).join("");
+  el("busca").value = ms.some(m => String(m.id) === atual) ? atual : String(ms.slice().sort((a, b) => b.freq - a.freq)[0].id);
   municipio();
 }
 
 function municipio() {
-  const v = el("busca").value, m = D.municipios.find(x => `${x.nome} (${x.uf})` === v) ||
-    filtrados().slice().sort((a, b) => b.freq - a.freq)[0];
+  const m = D.municipios.find(x => String(x.id) === el("busca").value);
   if (!m) return;
-  if (!v) el("busca").value = `${m.nome} (${m.uf})`;
   kpis("kpis-mun", [["Segmento", m.seg], ["Safras com benefício", `${m.acion} de ${m.obs}`], ["Valor recebido no período", reais(m.valor)],
     [`Risco na safra ${D.resumo.safraAtual || ""}`, pct(m.prob)]]);
   const S = D.resumo.safras, grupos = [[1, "Recebeu o benefício", LARANJA], [0, "Sem benefício", AZUL]];
@@ -194,7 +194,7 @@ function municipio() {
     return { type: "bar", name: nome, x: idx.map(i => S[i]), y: idx.map(i => m.hChuva[i]), marker: { color: cor },
       customdata: idx.map(i => m.hProb[i]), hovertemplate: "Safra %{x}: %{y:.0f}% da média<br>Previsão do modelo: %{customdata:.0%}<extra></extra>" };
   }), layout(`${m.nome} (${m.uf}): chuva de cada safra e se houve perda comprovada`, {
-    xaxis: { dtick: 1, showgrid: false }, yaxis: { title: "Chuva da estação (% da média)", gridcolor: GRADE },
+    xaxis: { dtick: 1, showgrid: false }, yaxis: { title: { text: "Chuva da estação (% da média)" }, gridcolor: GRADE }, showlegend: true,
     shapes: [{ type: "line", xref: "paper", x0: 0, x1: 1, y0: 100, y1: 100, line: { dash: "dot", color: CINZA } }] }), CFG);
 }
 
