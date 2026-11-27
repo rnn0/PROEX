@@ -12,11 +12,14 @@ com a seca.
 
 ## Perguntas
 
-1. **Com quantos meses de antecedência os dados de chuva permitem prever que um município vai precisar do
-   Garantia-Safra?**
-2. **Quais municípios têm perda recorrente e precisariam de políticas permanentes de convivência com a seca?**
+1. **Dá para saber pela chuva, antes da colheita, quais municípios vão perder a safra?**
+2. **Em quais municípios a perda de safra se repete quase todo ano?**
 
-As respostas são calculadas pelo pipeline e ficam em `reports/respostas.md` e no dashboard.
+Escopo: Semiárido (área da Sudene) e as lavouras de sequeiro cobertas pelo programa (feijão, milho, arroz,
+mandioca e algodão), com uma safra por ano.
+
+As respostas são calculadas pelo pipeline e ficam em `reports/respostas.md` e no dashboard. Os resultados com os
+dados reais estão em [`demo/reports/respostas.md`](demo/reports/respostas.md).
 
 ## Dados
 
@@ -59,6 +62,12 @@ docker compose up --build
 
 Para treinar de novo (ex.: depois de novos meses de pagamento): `PROEX_RETRAIN=1 docker compose up pipeline`.
 Para testar rápido sem baixar nada: `PROEX_SYNTHETIC=1 PROEX_RETRAIN=1 docker compose up`.
+
+### Dashboard online (Streamlit Community Cloud)
+
+O dashboard roda direto do repositório usando os resultados reais de `demo/`: em
+[share.streamlit.io](https://share.streamlit.io), crie um app apontando para este repositório, branch `main`,
+arquivo `dashboard/app.py`, e escolha Python 3.12 em *Advanced settings*.
 
 ### Sem Docker
 

@@ -25,12 +25,18 @@ O pagamento chega muitos meses depois da perda: por exemplo, a safra 2022/2023 s
 
 **Perguntas do trabalho.**
 
-1. **Com quantos meses de antecedência os dados de chuva permitem prever que um município vai precisar do
-   Garantia-Safra?** Se a resposta for "vários meses antes do pagamento", estados e municípios podem se preparar
-   (distribuição de água, sementes, cestas, frentes de trabalho) antes de a portaria sair.
-2. **Quais municípios têm perda recorrente e precisariam de políticas permanentes de convivência com a seca?**
+1. **Dá para saber pela chuva, antes da colheita, quais municípios vão perder a safra?**
+   Se sim, estados e municípios podem se preparar (distribuição de água, sementes, cestas, frentes de trabalho)
+   meses antes de o pagamento sair.
+2. **Em quais municípios a perda de safra se repete quase todo ano?**
    Onde a perda é a regra e não a exceção, um seguro emergencial anual não resolve: são candidatos prioritários
    a cisternas, tecnologias de captação de água, sementes adaptadas e assistência técnica.
+
+**Escopo.** O Garantia-Safra só existe na área da Sudene (Semiárido, norte de Minas Gerais e do Espírito
+Santo) e só cobre lavouras de sequeiro de ciclo curto: feijão, milho, arroz, mandioca e algodão, plantadas com
+as chuvas, uma safra por ano. Os resultados valem para esse contexto e **não** se aplicam a outras regiões ou
+culturas (soja e milho de duas safras no Paraná, café perene etc.). O limite de perda que libera o benefício era
+50% no período analisado e caiu para 40% com o Decreto nº 12.889, de março de 2026.
 
 **Critério de sucesso.** Um modelo avaliado em safras que ele nunca viu deve superar com folga os baselines
 (taxa média e histórico do município), medido por ROC-AUC e PR-AUC.
@@ -99,13 +105,40 @@ ocasional e baixo risco. Também usamos um critério direto: **recorrente = rece
 
 ## 5. Avaliação
 
-Preencher com os números de `reports/` depois de rodar com os dados reais:
+Dados reais: 1.317 municípios, safras 2018 a 2025 (10.536 linhas município × safra), 122 folhas mensais de
+pagamento e chuva de 323 células da grade da NASA POWER. Em 65% das linhas o município recebeu o benefício.
+Faltaram 5 folhas que o Portal não entregou (2019-07, 2023-04, 2024-01, 2026-10 e 2026-11).
 
-- Comparação de modelos (`comparacao_modelos.csv`): ROC-AUC / PR-AUC de cada modelo e dos baselines.
-- Antecedência (`antecedencia.csv`): desempenho por mês de corte → **resposta à pergunta 1**.
-- Importância por permutação (`importancia_atributos.csv`): o que mais pesa na previsão.
-- Segmentos (`segmentos.csv`) e lista de municípios recorrentes → **resposta à pergunta 2**.
-- Desempenho por safra (`metricas_por_safra.csv`): em quais anos o modelo erra mais.
+**Comparação de modelos** (chuva até o fim de abril, validação deixando cada safra de fora):
+
+| Modelo | Atributos | ROC-AUC | PR-AUC |
+|---|---|---|---|
+| Taxa média (baseline) | — | 0,50 | 0,65 |
+| Histórico do município (baseline) | histórico | 0,56 | 0,65 |
+| Regressão logística | só chuva | 0,57 | 0,70 |
+| Random Forest | chuva + histórico | 0,61 | 0,69 |
+| **Gradient Boosting (produção)** | chuva + histórico | **0,64** | **0,73** |
+
+**Resposta à pergunta 1 (previsão).** Sim, com precisão moderada. Com a chuva até o fim de janeiro, o modelo
+chega a ROC-AUC 0,64 (PR-AUC 0,74); com a chuva até junho, 0,69 (PR-AUC 0,77). O alerta sai durante a estação
+de chuvas, antes do fim da colheita. O pagamento só começa, em mediana, em fevereiro do ano seguinte: de 8 a 13
+meses depois do alerta. Essa antecedência é em relação ao **pagamento**, não à perda; a demora vem das etapas
+administrativas do programa. Usando só a chuva, o ROC-AUC fica entre 0,52 e 0,60: o que mais pesa é o histórico
+de perdas do município, seguido de dias com chuva e do maior veranico.
+
+**Resposta à pergunta 2 (recorrência).** Na maior parte do Semiárido, a perda é a regra:
+
+- 1.107 dos 1.317 municípios (84%) receberam o benefício em pelo menos metade das safras;
+- 638 receberam em 75% ou mais das safras e ficaram com 56% dos R$ 4,67 bilhões pagos no período;
+- 67 perderam a safra em todas as 8 safras, 28 deles na Bahia (ex.: Jussara, Dom Basílio, Serra Preta);
+- estados com mais municípios recorrentes: Bahia, Paraíba, Ceará, Piauí e Rio Grande do Norte.
+
+O K-Means (k = 4) separou um grupo de baixo risco (234 municípios, perda em 33% das safras, chuva normal de
+955 mm) dos demais (perda em 70% a 74% das safras, chuva normal de 610 a 695 mm). Como a perda é alta em quase
+todo o programa, a frequência simples de perda foi mais informativa que os segmentos.
+
+Números completos em `demo/reports/` (`respostas.md`, `antecedencia.csv`, `comparacao_modelos.csv`,
+`segmentos.csv`, `metricas_por_safra.csv`).
 
 **Limitações.**
 1. O Portal mostra quem **recebeu**, não quem **aderiu**. Um município sem pagamento numa safra pode não ter
@@ -115,7 +148,8 @@ Preencher com os números de `reports/` depois de rodar com os dados reais:
    modelo pode ser burocracia, não clima.
 3. O programa também cobre perda por **excesso** de chuva, que os atributos capturam pior.
 4. A NASA POWER tem resolução grossa (~55 km); chuvas locais podem escapar.
-5. A normal climatológica é calculada com todas as safras do período (pequeno vazamento de escala, não de alvo).
+5. Vale só para o Semiárido e as lavouras do programa (ver Escopo).
+6. A normal climatológica é calculada com todas as safras do período (pequeno vazamento de escala, não de alvo).
 
 ## 6. Implantação
 

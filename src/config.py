@@ -4,12 +4,21 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(os.environ.get("PROEX_ROOT", Path(__file__).resolve().parents[1]))
+# Sem resultados próprios, API e dashboard usam os resultados reais versionados em demo/
+# (gerados pelo workflow "Pipeline com dados reais"). Útil para hospedar o dashboard.
+_DEMO = ROOT / "demo"
+OUT_ROOT = (_DEMO if "PROEX_ROOT" not in os.environ and not (ROOT / "models" / "metadata.json").exists()
+            and (_DEMO / "models" / "metadata.json").exists() else ROOT)
+
+PERGUNTA_1 = "Dá para saber pela chuva, antes da colheita, quais municípios vão perder a safra?"
+PERGUNTA_2 = "Em quais municípios a perda de safra se repete quase todo ano?"
+
 DATA_DIR = ROOT / "data"
 RAW_DIR = DATA_DIR / "raw"
 INTERIM_DIR = DATA_DIR / "interim"
-PROCESSED_DIR = DATA_DIR / "processed"
-MODELS_DIR = ROOT / "models"
-REPORTS_DIR = ROOT / "reports"
+PROCESSED_DIR = OUT_ROOT / "data" / "processed"
+MODELS_DIR = OUT_ROOT / "models"
+REPORTS_DIR = OUT_ROOT / "reports"
 
 GS_RAW_DIR = RAW_DIR / "garantia_safra"     # zips/CSVs mensais do Portal da Transparência
 CHUVA_RAW_DIR = RAW_DIR / "chuva"           # JSON diário da NASA POWER, um por célula da grade

@@ -97,8 +97,7 @@ def responder_perguntas(antecedencia, comparacao, importancia, perfil, resumo_se
 
     return {
         "pergunta_1": {
-            "pergunta": "Com quantos meses de antecedência os dados de chuva permitem prever que um município "
-                        "vai precisar do Garantia-Safra?",
+            "pergunta": config.PERGUNTA_1,
             "mes_corte_recomendado": MESES[int(suficiente["mes_corte"])],
             "meses_de_antecedencia": float(suficiente["meses_ate_pagamento"]),
             "roc_auc": float(suficiente["roc_auc"]), "pr_auc": float(suficiente["pr_auc"]),
@@ -109,8 +108,7 @@ def responder_perguntas(antecedencia, comparacao, importancia, perfil, resumo_se
             "taxa_acionamento": float(painel["acionou"].mean()),
         },
         "pergunta_2": {
-            "pergunta": "Quais municípios têm perda recorrente e precisariam de políticas permanentes de "
-                        "convivência com a seca?",
+            "pergunta": config.PERGUNTA_2,
             "municipios_analisados": int(len(perfil)),
             "municipios_recorrentes": int(len(rec)),
             "criterio_recorrente": f"recebeu o benefício em >= {int(segment.LIMIAR_RECORRENTE * 100)}% das safras",
@@ -144,8 +142,12 @@ def escrever_respostas_md(resp: dict, modo: str) -> str:
 Com a chuva acumulada até o fim de **{p1['mes_corte_recomendado']}**, o modelo já alcança
 {p1['pr_auc'] / p1['pr_auc_maximo']:.0%} do melhor desempenho possível (ROC-AUC {p1['roc_auc']:.2f},
 PR-AUC {p1['pr_auc']:.2f}; taxa base de acionamento {p1['taxa_acionamento']:.0%}).
-Como o pagamento começa, em mediana, **{p1['meses_de_antecedencia']:.0f} meses** depois disso, essa é a
-antecedência com que a gestão pública poderia se preparar.
+A previsão sai durante a estação de chuvas, antes do fim da colheita. O pagamento do benefício só começa,
+em mediana, **{p1['meses_de_antecedencia']:.0f} meses** depois do fim de {p1['mes_corte_recomendado']}: essa é a folga
+para a gestão pública se preparar. A antecedência é em relação ao pagamento, não à perda.
+
+Escopo: Semiárido (área da Sudene) e as lavouras de sequeiro cobertas pelo programa (feijão, milho, arroz,
+mandioca e algodão), com uma safra por ano.
 
 - ROC-AUC usando só chuva, por mês de corte: {', '.join(f'{m}: {v:.2f}' for m, v in p1['roc_auc_so_chuva_por_mes'].items())}
 - Baseline "histórico do município": ROC-AUC {p1['roc_auc_baseline_historico']:.2f}
@@ -181,6 +183,9 @@ def _git_commit() -> str | None:
 
 def run(baixar: bool = False, sintetico: bool = False) -> dict:
     t0 = time.time()
+    # o pipeline sempre escreve na raiz do projeto, nunca nos resultados de demonstração (demo/)
+    config.PROCESSED_DIR = config.DATA_DIR / "processed"
+    config.MODELS_DIR, config.REPORTS_DIR = config.ROOT / "models", config.ROOT / "reports"
     modo = preparar_dados(baixar, sintetico)
 
     # 1) Entendimento/preparação dos dados

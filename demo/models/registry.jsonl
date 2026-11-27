@@ -1,0 +1,1 @@
+{"versao": "20261125-220043", "modo_dados": "real", "modelo": "Gradient Boosting", "metricas_validacao": {"roc_auc": 0.6409939937799142, "pr_auc": 0.7293336504722465, "brier": 0.23670947384336943, "f1": 0.697470080290865}}
