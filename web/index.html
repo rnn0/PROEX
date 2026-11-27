@@ -37,6 +37,7 @@
     </div>
     <p class="nota">Anos de seca (barras baixas à direita) tendem a coincidir com anos de muitos municípios com benefício
       (barras altas à esquerda): é essa relação que o modelo explora.</p>
+<details class="calculo"><summary>Como é calculado</summary><p><b>Perda por ano</b>: fração dos municípios que receberam o Garantia-Safra naquela safra. Cada pagamento do Portal da Transparência é atribuído a uma safra pelo mês em que começou: pagamentos iniciados entre julho de Y e junho de Y+1 pertencem à safra Y (safra Y-1/Y). <b>Chuva da estação</b>: chuva de outubro a junho (NASA POWER) em % da média do próprio local, mediana entre os municípios.</p></details>
     <details><summary>Qualidade e origem dos dados</summary><pre id="dados-qualidade"></pre></details>
   </section>
 
@@ -45,11 +46,13 @@
     <p class="nota">Escopo: Semiárido (área da Sudene), lavouras de sequeiro do programa (feijão, milho, arroz, mandioca e
       algodão), uma safra por ano. A previsão é feita dentro do ciclo da lavoura, no máximo 6 meses antes do fim da colheita (junho).</p>
     <div class="kpis" id="kpis-p1"></div>
-    <div class="grade2 larga">
-      <div class="graf" id="g-antecedencia"></div>
-      <div class="graf" id="g-importancia"></div>
-    </div>
+    <div class="graf" id="g-antecedencia"></div>
+<details class="calculo"><summary>Como é calculado</summary><p>Para cada mês, o modelo usa a chuva acumulada de outubro até o fim daquele mês. A <b>ROC-AUC</b> é a chance de o modelo dar risco maior a um município que perdeu a safra do que a um que não perdeu: 0,50 é acaso e 1,00 é acerto perfeito. A validação deixa uma safra inteira de fora por vez: cada ano é previsto por um modelo que nunca o viu, porque a seca atinge muitos municípios no mesmo ano. “Só chuva” usa apenas os atributos de chuva; “chuva + histórico” soma a fração de safras anteriores em que o município recebeu o benefício.</p></details>
+    <div class="graf" id="g-importancia"></div>
+<details class="calculo"><summary>Como é calculado</summary><p>Importância por permutação: em cada safra deixada de fora, embaralhamos um atributo por vez e medimos quanto o PR-AUC (precisão média) cai. Quanto maior a queda, mais o modelo depende daquele atributo. Valores perto de zero ou negativos indicam que o atributo quase não ajuda.</p></details>
     <div class="graf" id="g-chuva-perda"></div>
+<details class="calculo"><summary>Como é calculado</summary><p>Cada barra é a fração de municípios-safra que receberam o benefício, agrupados pela chuva de outubro até o fim de abril em % da média do próprio local. A média de cada local é calculada com todas as safras de 2018 a 2025 da NASA POWER.</p></details>
+
     <h3>Comparação de modelos (validação deixando uma safra inteira de fora)</h3>
     <div class="tabela" id="t-comparacao"></div>
     <h3>Desempenho em cada safra (modelo de produção)</h3>
@@ -66,6 +69,7 @@
         <div class="tabela" id="t-segmentos"></div>
       </div>
     </div>
+<details class="calculo"><summary>Como é calculado</summary><p><b>Frequência de perda</b> = safras com benefício ÷ safras observadas (8, de 2018 a 2025). <b>Recorrente</b>: frequência de pelo menos 50%. <b>Segmentos</b>: K-Means com 4 grupos sobre quatro medidas padronizadas: frequência de perda, chuva normal da estação (mm), variabilidade da chuva entre anos (coeficiente de variação) e frequência de estações secas (abaixo de 70% da média). Os grupos são nomeados da maior para a menor frequência de perda. <b>Valor</b>: soma dos pagamentos de 2018 a 2025.</p></details>
     <h3>Municípios onde a perda é a regra: candidatos a políticas permanentes de convivência com a seca</h3>
     <div class="tabela rolagem" id="t-recorrentes"></div>
   </section>
@@ -74,16 +78,20 @@
     <h2 id="titulo-atual"></h2>
     <p class="nota">O resultado oficial (portaria de pagamento) ainda não saiu: este é o alerta antecipado do modelo.</p>
     <div class="kpis" id="kpis-atual"></div>
-    <div class="grade2 larga">
+    <div class="grade2">
       <div class="graf mapa" id="m-atual"></div>
       <div class="tabela rolagem alta" id="t-atual"></div>
     </div>
+<details class="calculo"><summary>Como é calculado</summary><p>Modelo Gradient Boosting treinado com as safras de 2018 a 2025, usando a chuva de outubro do ano anterior até o fim de abril (2 meses antes do fim da colheita) e o histórico de perdas de cada município. A probabilidade é a chance estimada de o município receber o benefício nesta safra. <b>Risco alto</b>: 50% ou mais; <b>moderado</b>: de 25% a 50%. Como 65% dos municípios-safra receberam o benefício no período, muitos municípios aparecem com risco alto.</p></details>
+
   </section>
 
   <section id="mun" class="aba">
     <label class="filtro">Município <select id="busca"></select></label>
     <div class="kpis" id="kpis-mun"></div>
     <div class="graf" id="g-mun"></div>
+<details class="calculo"><summary>Como é calculado</summary><p>As barras mostram a chuva de outubro a junho de cada safra em % da média do município. Laranja: o município recebeu o benefício naquela safra. A “previsão do modelo” (no tooltip) foi feita sem ver aquela safra, com a chuva até o fim de abril.</p></details>
+
   </section>
 
   <section id="sim" class="aba">
@@ -96,6 +104,8 @@
     </div>
     <div class="resultado"><span id="r-prob"></span><span id="r-nivel"></span></div>
     <div class="barra"><div id="r-barra"></div></div>
+<details class="calculo"><summary>Como é calculado</summary><p>As probabilidades vêm do modelo de produção, calculadas de antemão para cerca de 1.700 combinações de chuva, veranico e histórico (a página não roda Python). Os demais atributos ficam em valores típicos: chuva normal e localização medianas dos municípios, dias com chuva estimados a partir da chuva, e estação anterior na média.</p></details>
+
   </section>
 </main>
 

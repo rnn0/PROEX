@@ -114,7 +114,7 @@ function desenhar() {
   const imp = D.importancia.slice(0, 8).reverse();
   Plotly.react("g-importancia", [{ type: "bar", orientation: "h", x: imp.map(i => i.importancia), y: imp.map(i => i.descricao),
     marker: { color: AZUL }, hovertemplate: "%{y}<br>%{x:.3f}<extra></extra>" }],
-    layout("O que mais pesa na previsão", { margin: { l: 320, r: 16, t: 56, b: 40 }, yaxis: { automargin: true } }), CFG);
+    layout("O que mais pesa na previsão", { margin: { l: 16, r: 16, t: 56, b: 40 }, yaxis: { automargin: true } }), CFG);
   const faixas = [[0, 50, "< 50%"], [50, 70, "50–70%"], [70, 85, "70–85%"], [85, 100, "85–100%"], [100, 115, "100–115%"], [115, 1e9, "> 115%"]];
   const rel = faixas.map(([a, b, rot]) => {
     let n = 0, k = 0;
@@ -173,7 +173,7 @@ function desenhar() {
     colorbar: { title: { text: "Probabilidade" }, tickformat: ".0%" } }, { titulo: "Probabilidade de precisar do Garantia-Safra",
     texto: m => `<b>${esc(m.nome)}</b> (${m.uf})<br>probabilidade ${pct(m.prob)}<br>chuva ${num(m.chuvaAtual)}% da média` });
   tabela("t-atual", [{ t: "Município", k: "nome" }, { t: "UF", k: "uf" }, { t: "Probabilidade", f: l => pct(l.prob), n: 1 },
-    { t: "Chuva (% da média)", f: l => num(l.chuvaAtual), n: 1 }, { t: "Maior veranico (dias)", k: "veranicoAtual", n: 1 }],
+    { t: "Chuva %", f: l => num(l.chuvaAtual), n: 1 }, { t: "Veranico", k: "veranicoAtual", n: 1 }],
     at.slice().sort((a, b) => b.prob - a.prob));
   const atual = el("busca").value;
   el("busca").innerHTML = ms.map(m => `<option value="${m.id}">${esc(m.nome)} (${m.uf})</option>`).join("");
