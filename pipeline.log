@@ -1,0 +1,12 @@
+2026-11-27 03:41:20,782 INFO src.data.download: Garantia-Safra: {'baixados': 0, 'em_cache': 96, 'sem_dados': 0, 'erros': ['201907: erro: HTTP 403', '202304: erro: HTTP 403', '202401: erro: HTTP 403', '202610: erro: HTTP 403', '202611: erro: HTTP 403']}
+2026-11-27 03:41:57,101 INFO src.data.download: Chuva NASA POWER: 323 células (3 a baixar)
+2026-11-27 03:41:57,714 INFO src.data.download: Chuva: {'celulas': 323, 'baixadas': 3, 'erros': 0}
+2026-11-27 03:41:59,262 INFO pipeline: Painel: {'arquivos_mensais_com_pagamento': 122, 'linhas_municipio_mes': 49664, 'episodios_de_pagamento': 10050, 'episodios_fora_do_periodo': 2495, 'municipios_no_programa': 1317, 'municipios_sem_coordenadas_descartados': 0, 'safras': [2018, 2025], 'linhas_painel': 10536, 'taxa_acionamento': 0.6467, 'celulas_chuva': 323, 'dias_chuva_ausentes_pct': 0.0}
+2026-11-27 03:42:10,750 INFO pipeline: Antecedência: corte em dez concluído
+2026-11-27 03:42:22,047 INFO pipeline: Antecedência: corte em jan concluído
+2026-11-27 03:42:33,436 INFO pipeline: Antecedência: corte em fev concluído
+2026-11-27 03:42:44,847 INFO pipeline: Antecedência: corte em mar concluído
+2026-11-27 03:42:56,341 INFO pipeline: Antecedência: corte em abr concluído
+2026-11-27 03:43:07,697 INFO pipeline: Antecedência: corte em mai concluído
+2026-11-27 03:43:19,236 INFO pipeline: Antecedência: corte em jun concluído
+2026-11-27 03:44:13,251 INFO pipeline: Pipeline concluído em 217s (modelo: Gradient Boosting, dados: real)

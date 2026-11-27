@@ -1,0 +1,16 @@
+{
+  "arquivos_mensais_com_pagamento":122,
+  "linhas_municipio_mes":49664,
+  "episodios_de_pagamento":10050,
+  "episodios_fora_do_periodo":2495,
+  "municipios_no_programa":1317,
+  "municipios_sem_coordenadas_descartados":0,
+  "safras":[
+    2018,
+    2025
+  ],
+  "linhas_painel":10536,
+  "taxa_acionamento":0.6467,
+  "celulas_chuva":323,
+  "dias_chuva_ausentes_pct":0.0
+}

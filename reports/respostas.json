@@ -1,0 +1,127 @@
+{
+  "pergunta_1": {
+    "pergunta": "Dá para saber pela chuva, antes da colheita, quais municípios vão perder a safra?",
+    "mes_corte_recomendado": "jan",
+    "meses_de_antecedencia": 13.0,
+    "meses_antes_da_colheita": 5,
+    "roc_auc": 0.6131715182589437,
+    "pr_auc": 0.7287498614534252,
+    "pr_auc_maximo": 0.764541581841649,
+    "roc_auc_so_chuva_por_mes": {
+      "dez": 0.455,
+      "jan": 0.513,
+      "fev": 0.502,
+      "mar": 0.504,
+      "abr": 0.578,
+      "mai": 0.574,
+      "jun": 0.601
+    },
+    "roc_auc_baseline_historico": 0.5643516398816671,
+    "principais_fatores": [
+      "Fração das safras anteriores em que o município recebeu o benefício",
+      "Dias com chuva >= 1 mm na estação",
+      "Longitude do município",
+      "Latitude do município",
+      "Chuva da estação em % da média histórica do local"
+    ],
+    "taxa_acionamento": 0.6467350037965072
+  },
+  "pergunta_2": {
+    "pergunta": "Em quais municípios a perda de safra se repete quase todo ano?",
+    "municipios_analisados": 1317,
+    "municipios_recorrentes": 1107,
+    "criterio_recorrente": "recebeu o benefício em >= 50% das safras",
+    "pct_valor_pago_recorrentes": 95.59405848543322,
+    "segmento_estrutural": {
+      "municipios": 31,
+      "freq_acionamento": 0.7379032258064516,
+      "chuva_normal_mm": 682.2021774193548,
+      "pct_valor_pago": 6.062389600393751
+    },
+    "ufs_mais_recorrentes": {
+      "BA": 251,
+      "PB": 168,
+      "CE": 143,
+      "PI": 137,
+      "RN": 135
+    },
+    "top_municipios": [
+      {
+        "municipio": "Girau do Ponciano",
+        "uf": "AL",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Jussara",
+        "uf": "BA",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Crateús",
+        "uf": "CE",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Dom Basílio",
+        "uf": "BA",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Ibimirim",
+        "uf": "PE",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Central",
+        "uf": "BA",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Betânia do Piauí",
+        "uf": "PI",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Serra Preta",
+        "uf": "BA",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Santa Rita de Cássia",
+        "uf": "BA",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Cacimba de Dentro",
+        "uf": "PB",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Oliveira dos Brejinhos",
+        "uf": "BA",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Ibiassucê",
+        "uf": "BA",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Macajuba",
+        "uf": "BA",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Jatobá",
+        "uf": "PE",
+        "freq_acionamento": 1.0
+      },
+      {
+        "municipio": "Iaçu",
+        "uf": "BA",
+        "freq_acionamento": 1.0
+      }
+    ],
+    "recorrentes_com_risco_alto_na_safra_atual": 950
+  }
+}
