@@ -39,7 +39,7 @@ Portal da Transparência ──► pagamentos por município e mês ──► ep
 NASA POWER ──────────────► chuva diária por célula ─────────► atributos da estação (out → mês de corte)
                                                          │
                        Classificação (validação deixando uma safra inteira de fora)
-                       Experimento de antecedência (corte em jan, fev, ..., jun)  ──► Pergunta 1
+                       Previsão dentro do ciclo (corte de dez a jun)            ──► Pergunta 1
                        K-Means (frequência de perda, chuva normal, variabilidade) ──► Pergunta 2
                                                          │
                                   API FastAPI  +  Dashboard Streamlit

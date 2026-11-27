@@ -1,7 +1,7 @@
 {
-  "versao": "20261125-220043",
+  "versao": "20261127-034413",
   "modo_dados": "real",
-  "git_commit": "f2f8d5c",
+  "git_commit": "b7cfc26",
   "modelo": "Gradient Boosting",
   "mes_corte": "abr",
   "safras_treino": [
@@ -10,10 +10,10 @@
   ],
   "safra_atual": 2026,
   "metricas_validacao": {
-    "roc_auc": 0.6409939937799142,
-    "pr_auc": 0.7293336504722465,
-    "brier": 0.23670947384336943,
-    "f1": 0.697470080290865
+    "roc_auc": 0.6320246846150898,
+    "pr_auc": 0.7320833987177383,
+    "brier": 0.24523366249815867,
+    "f1": 0.6756630265210608
   },
   "dados": {
     "arquivos_mensais_com_pagamento": 122,
@@ -31,5 +31,5 @@
     "celulas_chuva": 323,
     "dias_chuva_ausentes_pct": 0.0
   },
-  "duracao_s": 189.4
+  "duracao_s": 217.4
 }

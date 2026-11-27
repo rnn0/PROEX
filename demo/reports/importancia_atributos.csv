@@ -1,11 +1,11 @@
 feature,importancia,descricao
-historico_acionamento,0.02629992539379199,Fração das safras anteriores em que o município recebeu o benefício
-dias_com_chuva,0.010053237154768396,Dias com chuva >= 1 mm na estação
-max_dias_secos_seguidos,0.006516062895719563,Maior veranico (dias secos seguidos) de jan até o corte
-latitude,0.0050510342822320965,Latitude do município
-chuva_pct_normal,0.001567468973674884,Chuva da estação em % da média histórica do local
-longitude,0.001341916170459638,Longitude do município
-chuva_total_mm,-0.0003721756062430693,Chuva acumulada na estação (out até o mês de corte)
-chuva_anomalia_z,-0.001501073947421769,Desvio da chuva da estação em desvios-padrão
-chuva_safra_anterior_pct_normal,-0.0024455442910730927,Chuva da estação anterior (out-jun) em % da média
-chuva_trimestre_pct_normal,-0.003539107046691107,Chuva dos 3 meses antes do corte em % da média
+historico_acionamento,0.026097437861023504,Fração das safras anteriores em que o município recebeu o benefício
+dias_com_chuva,0.016661626309170022,Dias com chuva >= 1 mm na estação
+longitude,0.0036994087841775666,Longitude do município
+latitude,0.0018030171945382085,Latitude do município
+chuva_pct_normal,-0.00023055238487636876,Chuva da estação em % da média histórica do local
+chuva_anomalia_z,-0.00043654997511044036,Desvio da chuva da estação em desvios-padrão
+max_dias_secos_seguidos,-0.002678650412751567,Maior veranico (dias secos seguidos) de dez até o corte
+chuva_total_mm,-0.003701490587796097,Chuva acumulada na estação (out até o mês de corte)
+chuva_safra_anterior_pct_normal,-0.00474573208245859,Chuva da estação anterior (out-jun) em % da média
+chuva_trimestre_pct_normal,-0.005280798936203891,Chuva dos 3 meses antes do corte em % da média

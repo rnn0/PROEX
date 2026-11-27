@@ -94,8 +94,10 @@ baselines (taxa média; histórico do município). Classes balanceadas por peso.
 Um split aleatório seria enganoso: a seca atinge centenas de municípios no mesmo ano, e misturar o mesmo ano em
 treino e teste inflaria as métricas.
 
-**Experimento de antecedência (pergunta 1).** O mesmo modelo é treinado com a chuva cortada no fim de janeiro,
-fevereiro, ..., junho. Para cada corte medimos o desempenho e a mediana de meses até o início do pagamento.
+**Previsão dentro do ciclo (pergunta 1).** O mesmo modelo é treinado com a chuva cortada no fim de dezembro,
+janeiro, ..., junho, ou seja, de 6 meses a 0 mês antes do fim da colheita. Não tentamos prever com um ano de
+antecedência: o horizonte máximo é o próprio ciclo da lavoura. Para cada corte medimos o desempenho, os meses
+até o fim da colheita e a mediana de meses até o início do pagamento.
 O "mês recomendado" é o primeiro que alcança 95% do melhor PR-AUC.
 
 **Segmentação (pergunta 2)** (`src/models/segment.py`): K-Means (k = 4, silhueta reportada para k = 2..6)
@@ -109,22 +111,37 @@ Dados reais: 1.317 municípios, safras 2018 a 2025 (10.536 linhas município × 
 pagamento e chuva de 323 células da grade da NASA POWER. Em 65% das linhas o município recebeu o benefício.
 Faltaram 5 folhas que o Portal não entregou (2019-07, 2023-04, 2024-01, 2026-10 e 2026-11).
 
-**Comparação de modelos** (chuva até o fim de abril, validação deixando cada safra de fora):
+**Comparação de modelos** (chuva até o fim de abril, 2 meses antes do fim da colheita; validação deixando cada safra de fora):
 
 | Modelo | Atributos | ROC-AUC | PR-AUC |
 |---|---|---|---|
 | Taxa média (baseline) | — | 0,50 | 0,65 |
 | Histórico do município (baseline) | histórico | 0,56 | 0,65 |
-| Regressão logística | só chuva | 0,57 | 0,70 |
-| Random Forest | chuva + histórico | 0,61 | 0,69 |
-| **Gradient Boosting (produção)** | chuva + histórico | **0,64** | **0,73** |
+| Regressão logística | só chuva | 0,56 | 0,69 |
+| Random Forest | chuva + histórico | 0,60 | 0,68 |
+| **Gradient Boosting (produção)** | chuva + histórico | **0,63** | **0,73** |
 
-**Resposta à pergunta 1 (previsão).** Sim, com precisão moderada. Com a chuva até o fim de janeiro, o modelo
-chega a ROC-AUC 0,64 (PR-AUC 0,74); com a chuva até junho, 0,69 (PR-AUC 0,77). O alerta sai durante a estação
-de chuvas, antes do fim da colheita. O pagamento só começa, em mediana, em fevereiro do ano seguinte: de 8 a 13
-meses depois do alerta. Essa antecedência é em relação ao **pagamento**, não à perda; a demora vem das etapas
-administrativas do programa. Usando só a chuva, o ROC-AUC fica entre 0,52 e 0,60: o que mais pesa é o histórico
-de perdas do município, seguido de dias com chuva e do maior veranico.
+**Resposta à pergunta 1 (previsão).** Sim, dentro do ciclo da lavoura e com precisão moderada. As lavouras do
+programa (feijão e milho, sobretudo) são plantadas com as chuvas, entre outubro e dezembro, e fecham o ciclo em
+3 a 4 meses; a colheita termina por volta de junho. Por isso a previsão foi testada mês a mês, de dezembro
+(6 meses antes do fim da colheita) a junho (fim da colheita), sem tentar prever com um ano de antecedência:
+
+| Mês da previsão | Meses até o fim da colheita | ROC-AUC (chuva + histórico) | ROC-AUC (só chuva) |
+|---|---|---|---|
+| dez | 6 | 0,54 | 0,45 |
+| jan | 5 | 0,61 | 0,51 |
+| fev | 4 | 0,61 | 0,50 |
+| mar | 3 | 0,62 | 0,50 |
+| abr | 2 | 0,63 | 0,58 |
+| mai | 1 | 0,66 | 0,57 |
+| jun | 0 | 0,68 | 0,60 |
+
+Com 6 meses de antecedência (dezembro), a previsão quase não supera o acaso (0,50). A partir de janeiro, com
+5 meses até a colheita, ela passa do baseline "histórico do município" (0,56) e melhora conforme o ciclo avança,
+chegando a 0,68 no fim da colheita. Mesmo no fim de junho ainda faltam, em mediana, 8 meses para o pagamento
+começar: é a janela para a gestão pública agir. O que mais pesa é o histórico de perdas do município, seguido
+dos dias com chuva; a chuva sozinha explica pouco, porque o pagamento também depende de adesão e de etapas
+administrativas.
 
 **Resposta à pergunta 2 (recorrência).** Na maior parte do Semiárido, a perda é a regra:
 

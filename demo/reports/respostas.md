@@ -3,18 +3,18 @@
 ## Pergunta 1 — Dá para saber pela chuva, antes da colheita, quais municípios vão perder a safra?
 
 Com a chuva acumulada até o fim de **jan**, o modelo já alcança
-96% do melhor desempenho possível (ROC-AUC 0.64,
-PR-AUC 0.74; taxa base de acionamento 65%).
-A previsão sai durante a estação de chuvas, antes do fim da colheita. O pagamento do benefício só começa,
-em mediana, **13 meses** depois do fim de jan: essa é a folga
-para a gestão pública se preparar. A antecedência é em relação ao pagamento, não à perda.
+95% do melhor desempenho possível (ROC-AUC 0.61,
+PR-AUC 0.73; taxa base de acionamento 65%).
+A previsão é feita dentro do ciclo da lavoura: no fim de jan faltam
+**5 meses** para o fim da colheita (junho), e o pagamento do benefício só começa, em
+mediana, 13 meses depois. O horizonte máximo testado é de 6 meses (dezembro).
 
 Escopo: Semiárido (área da Sudene) e as lavouras de sequeiro cobertas pelo programa (feijão, milho, arroz,
 mandioca e algodão), com uma safra por ano.
 
-- ROC-AUC usando só chuva, por mês de corte: jan: 0.55, fev: 0.52, mar: 0.53, abr: 0.57, mai: 0.59, jun: 0.60
+- ROC-AUC usando só chuva, por mês de corte: dez: 0.46, jan: 0.51, fev: 0.50, mar: 0.50, abr: 0.58, mai: 0.57, jun: 0.60
 - Baseline "histórico do município": ROC-AUC 0.56
-- Fatores mais importantes: Fração das safras anteriores em que o município recebeu o benefício; Dias com chuva >= 1 mm na estação; Maior veranico (dias secos seguidos) de jan até o corte; Latitude do município; Chuva da estação em % da média histórica do local
+- Fatores mais importantes: Fração das safras anteriores em que o município recebeu o benefício; Dias com chuva >= 1 mm na estação; Longitude do município; Latitude do município; Chuva da estação em % da média histórica do local
 
 ## Pergunta 2 — Em quais municípios a perda de safra se repete quase todo ano?
 
