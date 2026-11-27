@@ -24,7 +24,7 @@ DESCRICAO_FEATURES = {
     "chuva_pct_normal": "Chuva da estação em % da média histórica do local",
     "chuva_anomalia_z": "Desvio da chuva da estação em desvios-padrão",
     "dias_com_chuva": "Dias com chuva >= 1 mm na estação",
-    "max_dias_secos_seguidos": "Maior veranico (dias secos seguidos) de jan até o corte",
+    "max_dias_secos_seguidos": "Maior veranico (dias secos seguidos) de dez até o corte",
     "chuva_trimestre_pct_normal": "Chuva dos 3 meses antes do corte em % da média",
     "chuva_safra_anterior_pct_normal": "Chuva da estação anterior (out-jun) em % da média",
     "historico_acionamento": "Fração das safras anteriores em que o município recebeu o benefício",
@@ -43,7 +43,7 @@ def _max_seguidos(secos: np.ndarray) -> int:
 
 def _janela(safra: int, mes_corte: int) -> tuple[pd.Timestamp, pd.Timestamp]:
     inicio = pd.Timestamp(safra - 1, config.MES_INICIO_ESTACAO, 1)
-    fim = pd.Timestamp(safra, mes_corte, 1) + pd.offsets.MonthEnd(0)
+    fim = pd.Timestamp(config.ano_do_corte(safra, mes_corte), mes_corte, 1) + pd.offsets.MonthEnd(0)
     return inicio, fim
 
 
@@ -59,7 +59,7 @@ def features_chuva_por_celula(chuva: pd.DataFrame, safras: list[int], mes_corte:
             if jan.notna().sum() < 0.9 * ((fim - ini).days + 1):
                 continue
             tri_ini = fim - pd.offsets.MonthBegin(3)
-            veranico = s.loc[pd.Timestamp(safra, 1, 1):fim]
+            veranico = s.loc[pd.Timestamp(safra - 1, 12, 1):fim]  # a lavoura já está no campo
             ant_ini, ant_fim = _janela(safra - 1, 6)
             ant = s.loc[ant_ini:ant_fim]
             linhas.append({

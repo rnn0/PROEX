@@ -99,17 +99,17 @@ function desenhar() {
   // ------------------------------------------------ pergunta 1
   const p1 = r.respostas.pergunta_1;
   kpis("kpis-p1", [["Previsão possível a partir do fim de", p1.mes_corte_recomendado],
-    ["Antecedência até o início do pagamento", `${num(p1.meses_de_antecedencia)} meses`, "mediana; a perda acontece na colheita"],
+    ["Antes do fim da colheita", `${num(p1.meses_antes_da_colheita)} meses`, `o pagamento só sai ~${num(p1.meses_de_antecedencia)} meses depois`],
     ["ROC-AUC nesse mês", num(p1.roc_auc, 2), `acaso = 0,50 · só histórico = ${num(p1.roc_auc_baseline_historico, 2)}`]]);
   const ant = D.antecedencia, series = ["só chuva", "chuva + histórico"];
   Plotly.react("g-antecedencia", series.map((s, i) => {
-    const a = ant.filter(x => x.atributos === s).sort((x, y) => x.mes_corte - y.mes_corte);
-    return { type: "scatter", mode: "lines+markers", name: s, x: a.map(x => x.mes), y: a.map(x => x.roc_auc),
+    const a = ant.filter(x => x.atributos === s).sort((x, y) => y.meses_ate_colheita - x.meses_ate_colheita);
+    return { type: "scatter", mode: "lines+markers", name: s, x: a.map(x => `${x.mes} (${x.meses_ate_colheita}m)`), y: a.map(x => x.roc_auc),
       line: { color: [AZUL, LARANJA][i], width: 2 }, marker: { size: 8 },
-      customdata: a.map(x => x.meses_ate_pagamento),
-      hovertemplate: "%{x}: ROC-AUC %{y:.2f}<br>~%{customdata:.0f} meses antes do pagamento<extra>" + s + "</extra>" };
-  }), layout("Precisão conforme o mês em que a previsão é feita (ROC-AUC)", {
-    xaxis: { title: { text: "Mês em que a previsão é feita" }, showgrid: false }, yaxis: { gridcolor: GRADE, title: { text: "ROC-AUC" } },
+      customdata: a.map(x => x.meses_ate_colheita),
+      hovertemplate: "%{x}: ROC-AUC %{y:.2f}<br>%{customdata} meses antes do fim da colheita<extra>" + s + "</extra>" };
+  }), layout("Precisão ao longo do ciclo da lavoura (ROC-AUC)", {
+    xaxis: { title: { text: "Mês da previsão (meses que faltam para o fim da colheita)" }, showgrid: false }, yaxis: { gridcolor: GRADE, title: { text: "ROC-AUC" } },
     margin: { l: 56, r: 16, t: 56, b: 96 }, legend: { orientation: "h", y: -0.28, yanchor: "top", x: 0 } }), CFG);
   const imp = D.importancia.slice(0, 8).reverse();
   Plotly.react("g-importancia", [{ type: "bar", orientation: "h", x: imp.map(i => i.importancia), y: imp.map(i => i.descricao),

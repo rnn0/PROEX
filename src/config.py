@@ -54,7 +54,15 @@ SAFRA_ATUAL = SAFRA_FINAL + 1
 
 # Estação chuvosa usada nas features: de outubro de Y-1 até o mês de corte em Y.
 MES_INICIO_ESTACAO = 10
-MESES_CORTE = [1, 2, 3, 4, 5, 6]  # experimento de antecedência (jan..jun)
+# Previsão dentro do ciclo: de dezembro (logo após o plantio) a junho (colheita), horizonte de no máximo 6 meses.
+# Lavouras do programa (feijão, milho) fecham o ciclo em ~3 a 4 meses; a colheita termina por volta de junho.
+MESES_CORTE = [12, 1, 2, 3, 4, 5, 6]
+MES_COLHEITA = 6
+
+
+def ano_do_corte(safra: int, mes_corte: int) -> int:
+    """Cortes de out-dez caem no ano anterior ao da colheita (safra Y-1/Y)."""
+    return safra - 1 if mes_corte >= MES_INICIO_ESTACAO else safra
 MES_CORTE_PRODUCAO = int(os.environ.get("PROEX_MES_CORTE", 4))  # modelo servido na API/dashboard
 
 DIA_SECO_MM = 1.0  # dia com menos de 1 mm é considerado seco

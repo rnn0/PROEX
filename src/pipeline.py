@@ -28,7 +28,7 @@ from src.features.build import DESCRICAO_FEATURES, FEATURES, FEATURES_CHUVA, mon
 from src.models import classifier, segment
 
 log = logging.getLogger("pipeline")
-MESES = {1: "jan", 2: "fev", 3: "mar", 4: "abr", 5: "mai", 6: "jun"}
+MESES = {12: "dez", 1: "jan", 2: "fev", 3: "mar", 4: "abr", 5: "mai", 6: "jun"}
 
 
 def _tem_dados_reais() -> bool:
@@ -62,7 +62,12 @@ def meses_ate_pagamento(painel: pd.DataFrame, mes_corte: int) -> float:
         return float("nan")
     a = pg["mes_inicio_pagamento"].str.slice(0, 4).astype(int)
     m = pg["mes_inicio_pagamento"].str.slice(5, 7).astype(int)
-    return float(np.median((a * 12 + m) - (pg["safra"] * 12 + mes_corte)))
+    return float(np.median((a * 12 + m) - (pg["safra"].map(lambda y: config.ano_do_corte(y, mes_corte)) * 12 + mes_corte)))
+
+
+def meses_ate_colheita(mes_corte: int) -> int:
+    """Horizonte da previsão dentro do ciclo: meses entre o corte e o fim da colheita (junho)."""
+    return (config.MES_COLHEITA - mes_corte) % 12
 
 
 def experimento_antecedencia(painel, chuva) -> tuple[pd.DataFrame, dict]:
@@ -77,6 +82,7 @@ def experimento_antecedencia(painel, chuva) -> tuple[pd.DataFrame, dict]:
             oof, _ = classifier.validar_por_safra(base, gb, feats)
             ok = oof.notna()
             linhas.append({"mes_corte": mes, "mes": MESES[mes], "atributos": rotulo,
+                           "meses_ate_colheita": meses_ate_colheita(mes),
                            "meses_ate_pagamento": meses_ate_pagamento(painel, mes),
                            **classifier.metricas(y[ok], oof[ok])})
         log.info("Antecedência: corte em %s concluído", MESES[mes])
@@ -85,7 +91,7 @@ def experimento_antecedencia(painel, chuva) -> tuple[pd.DataFrame, dict]:
 
 def responder_perguntas(antecedencia, comparacao, importancia, perfil, resumo_seg, previsao_atual,
                         painel) -> dict:
-    ant = antecedencia[antecedencia["atributos"] == "chuva + histórico"].sort_values("mes_corte")
+    ant = antecedencia[antecedencia["atributos"] == "chuva + histórico"].sort_values("meses_ate_colheita", ascending=False)
     melhor = ant["pr_auc"].max()
     suficiente = ant[ant["pr_auc"] >= 0.95 * melhor].iloc[0]
     so_chuva = antecedencia[antecedencia["atributos"] == "só chuva"].set_index("mes_corte")["roc_auc"]
@@ -100,6 +106,7 @@ def responder_perguntas(antecedencia, comparacao, importancia, perfil, resumo_se
             "pergunta": config.PERGUNTA_1,
             "mes_corte_recomendado": MESES[int(suficiente["mes_corte"])],
             "meses_de_antecedencia": float(suficiente["meses_ate_pagamento"]),
+            "meses_antes_da_colheita": int(suficiente["meses_ate_colheita"]),
             "roc_auc": float(suficiente["roc_auc"]), "pr_auc": float(suficiente["pr_auc"]),
             "pr_auc_maximo": float(melhor),
             "roc_auc_so_chuva_por_mes": {MESES[int(k)]: round(float(v), 3) for k, v in so_chuva.items()},
@@ -142,9 +149,9 @@ def escrever_respostas_md(resp: dict, modo: str) -> str:
 Com a chuva acumulada até o fim de **{p1['mes_corte_recomendado']}**, o modelo já alcança
 {p1['pr_auc'] / p1['pr_auc_maximo']:.0%} do melhor desempenho possível (ROC-AUC {p1['roc_auc']:.2f},
 PR-AUC {p1['pr_auc']:.2f}; taxa base de acionamento {p1['taxa_acionamento']:.0%}).
-A previsão sai durante a estação de chuvas, antes do fim da colheita. O pagamento do benefício só começa,
-em mediana, **{p1['meses_de_antecedencia']:.0f} meses** depois do fim de {p1['mes_corte_recomendado']}: essa é a folga
-para a gestão pública se preparar. A antecedência é em relação ao pagamento, não à perda.
+A previsão é feita dentro do ciclo da lavoura: no fim de {p1['mes_corte_recomendado']} faltam
+**{p1['meses_antes_da_colheita']} meses** para o fim da colheita (junho), e o pagamento do benefício só começa, em
+mediana, {p1['meses_de_antecedencia']:.0f} meses depois. O horizonte máximo testado é de 6 meses (dezembro).
 
 Escopo: Semiárido (área da Sudene) e as lavouras de sequeiro cobertas pelo programa (feijão, milho, arroz,
 mandioca e algodão), com uma safra por ano.
@@ -221,7 +228,7 @@ def run(baixar: bool = False, sintetico: bool = False) -> dict:
         log.warning("Sem chuva suficiente para prever a safra %s até %s.", config.SAFRA_ATUAL, MESES[corte])
 
     # 4) Pergunta 2: segmentação
-    chuva_safra = bases[max(config.MESES_CORTE)][["codigo_siafi", "safra", "chuva_total_mm", "chuva_pct_normal"]]
+    chuva_safra = bases[config.MES_COLHEITA][["codigo_siafi", "safra", "chuva_total_mm", "chuva_pct_normal"]]
     perfil = segment.perfil_municipios(painel, chuva_safra)
     perfil, resumo_seg, silhuetas = segment.segmentar(perfil)
     if previsao_atual is not None:

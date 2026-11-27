@@ -130,15 +130,15 @@ with aba_p1:
     r1 = d["respostas"]["pergunta_1"]
     st.subheader(config.PERGUNTA_1)
     st.caption("Escopo: Semiárido (área da Sudene), lavouras de sequeiro do programa (feijão, milho, arroz, "
-               "mandioca e algodão), uma safra por ano. A antecedência é contada até o início do pagamento.")
+               "mandioca e algodão), uma safra por ano. A previsão é feita dentro do ciclo, no máximo 6 meses antes do fim da colheita.")
     c = st.columns(3)
     c[0].metric("Previsão possível a partir do fim de", r1["mes_corte_recomendado"])
-    c[1].metric("Antecedência até o pagamento (mediana)", f"{r1['meses_de_antecedencia']:.0f} meses")
+    c[1].metric("Antes do fim da colheita", f"{r1.get('meses_antes_da_colheita', '-')} meses")
     c[2].metric("ROC-AUC nesse mês", f"{r1['roc_auc']:.2f}",
                 delta=f"{r1['roc_auc'] - r1['roc_auc_baseline_historico']:+.2f} vs. só histórico")
 
     ant = d["antecedencia"].copy()
-    ant["mes"] = pd.Categorical(ant["mes"], ["jan", "fev", "mar", "abr", "mai", "jun"], ordered=True)
+    ant["mes"] = pd.Categorical(ant["mes"], ["dez", "jan", "fev", "mar", "abr", "mai", "jun"], ordered=True)
     fig = px.line(ant.sort_values("mes"), x="mes", y="pr_auc", color="atributos", markers=True,
                   color_discrete_sequence=[AZUL, LARANJA],
                   labels={"mes": "Mês em que a previsão é feita", "pr_auc": "PR-AUC (validação por safra)"},
