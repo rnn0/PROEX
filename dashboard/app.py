@@ -315,5 +315,8 @@ with aba_sim:
     st.progress(min(max(prob, 0.0), 1.0), text=f"Risco {nivel}")
 
 st.divider()
-st.caption("Projeto PROEX — Mineração de Dados · Fontes: Portal da Transparência (Garantia-Safra), NASA POWER "
-           "(chuva), IBGE/kelvins (municípios).")
+st.caption("Projeto PROEX — Mineração de Dados · Download das bases: "
+           "[Garantia-Safra (Portal da Transparência)](https://portaldatransparencia.gov.br/download-de-dados/garantia-safra) · "
+           "[chuva diária (NASA POWER)](https://power.larc.nasa.gov/data-access-viewer/) · "
+           "[municípios (kelvins)](https://raw.githubusercontent.com/kelvins/municipios-brasileiros/main/csv/municipios.csv) · "
+           "[código e dados no GitHub](https://github.com/rnn0/PROEX)")

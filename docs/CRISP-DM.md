@@ -49,6 +49,15 @@ culturas (soja e milho de duas safras no Paraná, café perene etc.). O limite d
 | [NASA POWER](https://power.larc.nasa.gov/) (API diária, `PRECTOTCORR`) | chuva diária corrigida (mm/dia), grade de 0,5° × 0,625° | atributos de chuva |
 | [kelvins/municipios-brasileiros](https://github.com/kelvins/municipios-brasileiros) | código IBGE, código SIAFI, latitude e longitude | ligação SIAFI → IBGE e coordenadas |
 
+Links diretos para download:
+
+- Garantia-Safra: https://portaldatransparencia.gov.br/download-de-dados/garantia-safra (um `.zip` por mês em
+  `https://portaldatransparencia.gov.br/download-de-dados/garantia-safra/AAAAMM`)
+- Chuva diária NASA POWER: https://power.larc.nasa.gov/data-access-viewer/ (API: https://power.larc.nasa.gov/docs/services/api/temporal/daily/)
+- Municípios: https://raw.githubusercontent.com/kelvins/municipios-brasileiros/main/csv/municipios.csv
+- Limites dos estados (mapa do relatório): https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson
+- Folhas baixadas manualmente: branch `dados-brutos` deste repositório; resultados: branch `resultados` e pasta `demo/`
+
 Observações:
 - O Portal identifica o município pelo **código SIAFI**, não pelo IBGE; a tabela de municípios faz a ponte.
 - Os arquivos do Portal são mensais (folha de pagamento). Um mesmo pagamento pode vir em várias folhas: em

@@ -26,14 +26,27 @@ dados reais estão em [`demo/reports/respostas.md`](demo/reports/respostas.md).
 
 ## Dados
 
-| Fonte | O que é |
-|---|---|
-| [Portal da Transparência — Garantia-Safra](https://portaldatransparencia.gov.br/download-de-dados/garantia-safra) | pagamentos mensais do benefício, por agricultor e município |
-| [NASA POWER](https://power.larc.nasa.gov/) | chuva diária por ponto (reanálise, sem falhas) |
-| [kelvins/municipios-brasileiros](https://github.com/kelvins/municipios-brasileiros) | códigos IBGE/SIAFI e coordenadas |
+### Links para download
 
-Tudo é baixado automaticamente (com cache em `data/raw/`). Sem internet, o pipeline usa um **dataset
-sintético** no mesmo formato, só para validar o fluxo (o dashboard avisa quando é o caso).
+| Base | Download | Conteúdo | Uso no projeto |
+|---|---|---|---|
+| Garantia-Safra (Portal da Transparência / CGU) | [página de download](https://portaldatransparencia.gov.br/download-de-dados/garantia-safra) · um arquivo por mês: `https://portaldatransparencia.gov.br/download-de-dados/garantia-safra/AAAAMM` (ex.: [202403](https://portaldatransparencia.gov.br/download-de-dados/garantia-safra/202403)) | pagamentos mensais do benefício, por agricultor e município (CSV em `.zip`) | alvo: o município recebeu o benefício na safra? |
+| Chuva diária (NASA POWER) | [Data Access Viewer](https://power.larc.nasa.gov/data-access-viewer/) · [API diária](https://power.larc.nasa.gov/docs/services/api/temporal/daily/) (parâmetro `PRECTOTCORR`) | chuva diária corrigida (mm/dia), grade de 0,5° × 0,625° | atributos de chuva da estação |
+| Municípios brasileiros (kelvins) | [municipios.csv](https://raw.githubusercontent.com/kelvins/municipios-brasileiros/main/csv/municipios.csv) · [repositório](https://github.com/kelvins/municipios-brasileiros) | códigos IBGE e SIAFI, latitude e longitude | ligação entre o Portal e a chuva |
+| Limites dos estados (Code for America) | [brazil-states.geojson](https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson) | contorno dos estados | mapa do relatório |
+
+### Dados já baixados e resultados neste repositório
+
+| O quê | Onde |
+|---|---|
+| Folhas do Garantia-Safra baixadas manualmente (jul/2022 a set/2026) | branch [`dados-brutos`](https://github.com/rnn0/PROEX/tree/dados-brutos) |
+| Resultados da última execução com os dados reais (tabelas, métricas, modelo, log) | branch [`resultados`](https://github.com/rnn0/PROEX/tree/resultados) e pasta [`demo/`](demo/) |
+| Dados usados pelo dashboard (JSON) | pasta [`web/dados/`](web/dados/) |
+
+O pipeline baixa tudo automaticamente (com cache em `data/raw/`). O Portal da Transparência pode recusar
+downloads automáticos em sequência; nesse caso, baixe os meses pelo navegador e coloque os `.zip` em
+`data/raw/garantia_safra/` (ou no branch `dados-brutos`, que o workflow do GitHub Actions usa). Sem
+internet, o pipeline usa um **dataset sintético** no mesmo formato, só para validar o fluxo.
 
 ## Como funciona
 
@@ -52,7 +65,7 @@ Detalhes, decisões e limitações em [`docs/CRISP-DM.md`](docs/CRISP-DM.md).
 
 ## Como executar
 
-### Com Docker (recomendado)
+### Com Docker (opcional)
 
 ```bash
 docker compose up --build
